@@ -78,9 +78,15 @@ MIDDLEWARE = [
 ## django-auditlog extra context.
 This library can also augment django-auditlog's additional_data fields with active context.
 To enable this, optional package `django-auditlog` must be installed and it must be explicitly enabled
-in settings.py file.
+in `settings.py` file.
 ```python
 LOGGER_EXTRA_AUGMENT_DJANGO_AUDITLOG = True
+```
+
+In order to mask actor email on your `django-auditlog` log entries, you can set the following option
+in your `settings.py` file.
+```python
+LOGGER_EXTRA_MASK_ACTOR_EMAIL = True
 ```
 
 ## Logger context usage
@@ -107,6 +113,18 @@ def foo():
 Will result log entry that looks like:
 `{"message": "Hello World", "level": "INFO", "time": "2025-04-14T11:08:22.962222+00:00", "context": {"request_id": "95e787b5-4ce8-46ef-bb6e-31651fc8774b", "greet": "Hello", "who": "World"}}`
 
+## django-resilient-logger resolve_actor patch
+This library also provides a utility actor resolver function for `django-resilient-logger` to guarantee
+that an actor's email (masked) and UUID is available in the resilient logger entries.
+
+In order to activate the feature, add the following setting to your `django-resilient-logger`
+(version 3.1.0 or higher) configuration:
+```python
+RESILIENT_LOGGER = {
+    # ...
+    "actor_resolver": "logger_extra.extras.resilient_logger.resolve_actor_with_masked_email",
+}
+```
 
 ## Gunicorn Logging Formatters
 
